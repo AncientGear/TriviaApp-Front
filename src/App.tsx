@@ -1,39 +1,37 @@
-import { useState } from 'react'
+import { useNavigate, Routes, Route } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 
 import Quiz from "./components/Quiz/Quiz.tsx";
 import Start from "./components/Start.tsx";
 import Highscore from "./components/Highscore/Highscore.tsx";
+import NotFoundElement from "./components/Elements/NotFoundElement.tsx";
 
 import './App.scss'
 
-enum CurrentAppView {
-    START,
-    QUIZ,
-    HIGHSCORE
-}
-
 function App() {
-    const [currentAppView, setCurrentAppView] = useState<CurrentAppView>(CurrentAppView.START)
-
-    function showHighscore() {
-        setCurrentAppView(CurrentAppView.HIGHSCORE)
-    }
+    const navigate = useNavigate();
 
     return (
         <>
             <Container>
-                {currentAppView === CurrentAppView.START ?
-                    <Start
-                        onStart={() => setCurrentAppView(CurrentAppView.QUIZ)}
-                        onHighscore={() => showHighscore()}
-                    /> : null}
+                <Routes>
+                    <Route path="/" element={
+                        <Start
+                            onStart={() => navigate('/quiz')}
+                            onHighscore={() => navigate('/highscore')}
+                        />
+                    } />
+                    
+                    <Route path="/quiz" element={
+                        <Quiz onNavigateToHighscore={() => navigate('/highscore')} />
+                    } />
+                    
+                    <Route path="/highscore" element={
+                        <Highscore onBack={() => navigate('/')} />
+                    } />
 
-                {currentAppView === CurrentAppView.QUIZ ?
-                    <Quiz onNavigateToHighscore={() => showHighscore()} /> : null}
-
-                {currentAppView === CurrentAppView.HIGHSCORE ?
-                    <Highscore onBack={() => setCurrentAppView(CurrentAppView.START)} /> : null}
+                    <Route path="*" element={<NotFoundElement />} />
+                </Routes>
             </Container>
         </>
     )
